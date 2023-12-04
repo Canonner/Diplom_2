@@ -2,7 +2,7 @@ import requests
 import allure
 import pytest
 
-from data import CommonData
+from data import Urls, Commondata
 
 
 class TestUserCreation:
@@ -30,10 +30,10 @@ class TestUserCreation:
     def test_creation_repeating_user_failed(self, create_user):
         repeating_user_payload = {
             "email": f'{create_user[1]}',
-            "password": CommonData.test_user_password,
-            "name": CommonData.test_user_name
+            "password": Commondata.test_user_password,
+            "name": Commondata.test_user_name
         }
-        response = requests.post(CommonData.register_url, data=repeating_user_payload)
+        response = requests.post(Urls.register_url, data=repeating_user_payload)
         assert response.status_code == 403, f'Instead of an error code 403 received code {response.status_code}'
         assert response.json().get('success') is False, 'Field "success" is not False in the response body'
         assert response.json()['message'] == 'User already exists', f'Error message contains wrong text'
@@ -43,9 +43,9 @@ class TestUserCreation:
                         'Parameterized test, checks impossibility of creation of a user, '
                         'when any of the mandatory fields is missing, '
                         'and that request returns "success": false')
-    @pytest.mark.parametrize('payload', CommonData.creation_missing_fields)
+    @pytest.mark.parametrize('payload', Commondata.creation_missing_fields)
     def test_creation_user_with_any_missing_field_failed(self, payload):
-        response = requests.post(CommonData.register_url, data=payload)
+        response = requests.post(Urls.register_url, data=payload)
         assert response.status_code == 403, f'Instead of an error code 403 received code {response.status_code}'
         assert response.json().get('success') is False, 'Field "success" is not False in the response body'
         assert response.json()['message'] == 'Email, password and name are required fields', \

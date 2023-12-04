@@ -2,7 +2,7 @@ import requests
 import allure
 import pytest
 
-from data import CommonData
+from data import Urls, Commondata
 
 
 class TestChangeUserData:
@@ -15,12 +15,12 @@ class TestChangeUserData:
     @pytest.mark.parametrize("changed_field", ["email", "password", "name"])
     def test_successful_user_data_change_with_auth(self, create_user, changed_field):
         payload = {"email": create_user[1],
-                   "password": CommonData.test_user_password,
-                   "name": CommonData.test_user_name
+                   "password": Commondata.test_user_password,
+                   "name": Commondata.test_user_name
                    }
         payload[changed_field] = f'{payload[changed_field]}a'
         headers = {'Authorization': f'{create_user[2]}'}
-        response = requests.patch(CommonData.change_user_data_url, data=payload, headers=headers)
+        response = requests.patch(Urls.change_user_data_url, data=payload, headers=headers)
         assert response.status_code == 200, f'Failed to change user data, code {response.status_code}'
         assert response.json().get('success') is True, 'Field "success" is not True in the response body'
         assert 'user' in response.json(), 'Field "user" is missing in the response body'
@@ -36,11 +36,11 @@ class TestChangeUserData:
     @pytest.mark.parametrize("changed_field", ["email", "password", "name"])
     def test_failed_user_data_change_without_auth(self, create_user, changed_field):
         payload = {"email": create_user[1],
-                   "password": CommonData.test_user_password,
-                   "name": CommonData.test_user_name
+                   "password": Commondata.test_user_password,
+                   "name": Commondata.test_user_name
                    }
         payload[changed_field] = f'{payload[changed_field]}a'
-        response = requests.patch(CommonData.change_user_data_url, data=payload)
+        response = requests.patch(Urls.change_user_data_url, data=payload)
         assert response.status_code == 401, f'Instead of an error code 401 received code {response.status_code}'
         assert response.json().get('success') is False, 'Field "success" is not False in the response body'
         assert response.json()['message'] == 'You should be authorised', f'Error message contains wrong text'
